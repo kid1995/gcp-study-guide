@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GCP Associate Cloud Engineer (ACE) Interactive Study Mind Map</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Hide scrollbars */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    /* 3D Flashcard Flip */
+    .flashcard-container {
+      perspective: 1000px;
+    }
+    .flashcard {
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flashcard-back {
+      transform: rotateY(180deg);
+    }
+    
+    /* Connection lines transition */
+    .connection-line {
+      transition: d 0.3s ease-in-out, stroke 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+    
+    /* Glow filter for selected node in dark mode */
+    .dark .glow-effect {
+      filter: drop-shadow(0 0 8px var(--glow-color));
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gcp: {
+              blue: '#4285F4',
+              red: '#EA4335',
+              yellow: '#F4B400',
+              green: '#34A853',
+              purple: '#AB47BC',
+              darkBg: '#090d16',
+              darkCard: '#0f172a',
+              darkBorder: '#1e293b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 dark:bg-gcp-darkBg text-slate-800 dark:text-slate-100 min-h-screen flex flex-col overflow-hidden transition-colors duration-300">
+
+  <!-- Header -->
+  <header class="bg-white dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-900 sticky top-0 backdrop-blur-md z-40 px-6 py-4 flex items-center justify-between transition-colors duration-300">
+    <div class="flex items-center space-x-3">
+      <div class="p-2 bg-gcp-blue/10 rounded-lg text-gcp-blue">
+        <i data-lucide="network" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+          GCP ACE Exam <span class="text-xs bg-gcp-blue/10 dark:bg-gcp-blue/20 text-gcp-blue font-semibold px-2 py-0.5 rounded-full uppercase">Interactive Study Companion</span>
+        </h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Google Cloud Certified Associate Cloud Engineer • High-Contrast Mind Map & Flashcards</p>
+      </div>
+    </div>
+    
+    <!-- Controls, Progress & Navigation -->
+    <div class="flex items-center space-x-4">
+      <!-- Theme Switcher -->
+      <button onclick="toggleTheme()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5" title="Toggle Theme">
+        <i id="theme-icon" data-lucide="sun" class="w-4 h-4 text-gcp-yellow"></i>
+        <span class="text-xs font-semibold" id="theme-text">Light Mode</span>
+      </button>
+
+      <!-- Tabs -->
+      <div class="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-0.5 flex space-x-1">
+        <button id="tab-mindmap" onclick="switchTab('mindmap')" class="px-4 py-1.5 rounded-md text-sm font-semibold transition bg-gcp-blue text-white flex items-center gap-2 shadow-sm">
+          <i data-lucide="milestone" class="w-4 h-4"></i> Mind Map
+        </button>
+        <button id="tab-flashcards" onclick="switchTab('flashcards')" class="px-4 py-1.5 rounded-md text-sm font-semibold transition text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2">
+          <i data-lucide="layers" class="w-4 h-4"></i> Flashcards
+        </button>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="flex flex-col items-end">
+        <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+          <i data-lucide="award" class="w-3.5 h-3.5 text-gcp-yellow"></i> Readiness: <span id="overall-progress-text">0%</span>
+        </span>
+        <div class="w-36 bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 mt-1 border border-slate-300 dark:border-slate-700 overflow-hidden">
+          <div id="overall-progress-bar" class="bg-gradient-to-r from-gcp-yellow via-gcp-green to-gcp-blue h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Grid Layout -->
+  <main class="flex-1 flex overflow-hidden relative">
+    
+    <!-- Tab 1: Interactive Mindmap (Canvas + Sidebar) -->
+    <div id="view-mindmap" class="flex-1 flex overflow-hidden">
+      
+      <!-- Interactive Mind Map Area (Left) -->
+      <div class="flex-1 relative bg-slate-100 dark:bg-slate-950 flex flex-col select-none transition-colors duration-300">
+        <!-- Canvas Controls Overlay -->
+        <div class="absolute top-4 left-4 z-10 flex flex-col space-y-2 bg-white/90 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/80 backdrop-blur-md rounded-lg p-2 shadow-xl transition-colors">
+          <button onclick="zoomIn()" class="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition" title="Zoom In">
+            <i data-lucide="zoom-in" class="w-5 h-5"></i>
+          </button>
+          <button onclick="zoomOut()" class="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition" title="Zoom Out">
+            <i data-lucide="zoom-out" class="w-5 h-5"></i>
+          </button>
+          <button onclick="resetZoom()" class="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition" title="Recenter View">
+            <i data-lucide="maximize" class="w-5 h-5"></i>
+          </button>
+          <div class="border-t border-slate-200 dark:border-slate-800 my-1"></div>
+          <button onclick="expandAllNodes()" class="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition" title="Expand All">
+            <i data-lucide="folder-open" class="w-5 h-5"></i>
+          </button>
+          <button onclick="collapseAllNodes()" class="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition" title="Collapse All">
+            <i data-lucide="folder" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Search overlay -->
+        <div class="absolute top-4 right-4 z-10 w-64 bg-white/90 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/80 backdrop-blur-md rounded-lg p-2 shadow-xl transition-colors">
+          <div class="relative">
+            <input id="search-input" type="text" placeholder="Search mind map..." oninput="handleSearch(this.value)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-gcp-blue rounded px-3 py-1.5 pl-8 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-2.5 top-2.5"></i>
+          </div>
+          <div id="search-results" class="hidden mt-1 max-h-32 overflow-y-auto border border-slate-200 dark:border-slate-800 rounded bg-white dark:bg-slate-950 p-1 no-scrollbar"></div>
+        </div>
+
+        <!-- Mind Map SVG Canvas -->
+        <svg id="mindmap-svg" class="w-full h-full cursor-grab" style="background-color: #f1f5f9;">
+          <!-- Grid pattern definition -->
+          <defs>
+            <pattern id="dot-grid" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+              <circle id="grid-dots" cx="2" cy="2" r="1.2" fill="#cbd5e1" />
+            </pattern>
+            <!-- SVG Drop Shadow Filter for glowing selections -->
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feComponentTransfer in="blur" result="glow1">
+                <feFuncA type="linear" slope="0.45"/>
+              </feComponentTransfer>
+              <feMerge>
+                <feMergeNode in="glow1" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          
+          <rect width="100%" height="100%" fill="url(#dot-grid)" />
+          
+          <!-- Transformed Group for Zoom and Pan -->
+          <g id="zoom-container">
+            <!-- Connections group (sit below nodes) -->
+            <g id="lines-group"></g>
+            <!-- Nodes group -->
+            <g id="nodes-group"></g>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Detail Sidebar (Right) -->
+      <div id="sidebar" class="w-[450px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col shadow-2xl relative transition-colors duration-300">
+        <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
+          <div>
+            <span id="sidebar-path" class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Select a node to review</span>
+            <h2 id="sidebar-title" class="text-base font-bold text-slate-900 dark:text-white mt-1 flex items-center gap-2">No Topic Selected</h2>
+          </div>
+          
+          <!-- Node Status Selector -->
+          <div class="flex items-center space-x-1" id="status-container">
+            <!-- Dynamically populated status pills -->
+          </div>
+        </div>
+        
+        <!-- Sidebar Content Area -->
+        <div class="flex-1 overflow-y-auto p-5 space-y-6 no-scrollbar text-slate-700 dark:text-slate-300" id="sidebar-content">
+          <!-- Welcome Screen (Default) -->
+          <div id="sidebar-welcome" class="flex flex-col items-center justify-center text-center h-full text-slate-500 dark:text-slate-400 space-y-4 px-4 py-8">
+            <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-full text-gcp-blue">
+              <i data-lucide="compass" class="w-12 h-12"></i>
+            </div>
+            <h3 class="text-slate-900 dark:text-white font-semibold text-lg">Interactive GCP Exam Companion</h3>
+            <p class="text-sm max-w-xs leading-relaxed">Click on any node in the Mind Map to view high-contrast study notes, terminal command syntax, pitfall alerts, and practicing interactive quiz questions!</p>
+            <div class="text-left w-full mt-6 bg-slate-50 dark:bg-slate-950/60 p-4 border border-slate-200 dark:border-slate-800/80 rounded-lg text-xs space-y-2">
+              <span class="font-bold text-slate-800 dark:text-slate-300">Quick Guide:</span>
+              <p class="flex items-start gap-2 text-slate-600 dark:text-slate-400"><span class="text-gcp-blue font-bold">•</span> Drag and pull the canvas to pan across the board.</p>
+              <p class="flex items-start gap-2 text-slate-600 dark:text-slate-400"><span class="text-gcp-blue font-bold">•</span> Use your mouse wheel or double-finger scroll to zoom.</p>
+              <p class="flex items-start gap-2 text-slate-600 dark:text-slate-400"><span class="text-gcp-blue font-bold">•</span> Click the <span class="bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1 py-0.5 rounded inline font-semibold text-[10px]">+ / −</span> bubbles on nodes to collapse/expand sections.</p>
+              <p class="flex items-start gap-2 text-slate-600 dark:text-slate-400"><span class="text-gcp-blue font-bold">•</span> Change a topic's status to track your real readiness progress!</p>
+            </div>
+          </div>
+
+          <!-- Active Study Content -->
+          <div id="sidebar-active-content" class="hidden space-y-6">
+            <!-- Category Banner description -->
+            <div id="topic-description-card" class="p-4 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 rounded-lg text-sm text-slate-700 dark:text-slate-300 border-l-4 leading-relaxed shadow-sm">
+              Description text...
+            </div>
+
+            <!-- Core Exam Concepts -->
+            <div class="space-y-3">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <i data-lucide="book-open" class="w-4 h-4 text-gcp-blue"></i> Core Exam Concepts
+              </h4>
+              <ul id="concepts-list" class="space-y-3.5 text-xs md:text-sm text-slate-700 dark:text-slate-300 pl-1 leading-relaxed">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+
+            <!-- Trap / Pitfall Alerts -->
+            <div id="exam-pitfalls-section" class="space-y-3 hidden">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400 flex items-center gap-1.5">
+                <i data-lucide="shield-alert" class="w-4 h-4 animate-pulse"></i> Watch Out For (Exam Traps)
+              </h4>
+              <div id="exam-pitfalls-card" class="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-lg p-4 text-sm text-slate-700 dark:text-red-200 leading-relaxed font-medium">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Terminal Commands Cheat Sheet -->
+            <div id="gcloud-commands-section" class="space-y-3 hidden">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <i data-lucide="terminal" class="w-4 h-4 text-gcp-green"></i> gcloud CLI & Commands
+              </h4>
+              <div class="space-y-2">
+                <!-- Dynamically populated command blocks -->
+                <div id="commands-container" class="space-y-3"></div>
+              </div>
+            </div>
+
+            <!-- Interactive Quiz -->
+            <div id="quiz-section" class="space-y-3 border-t border-slate-200 dark:border-slate-800 pt-5 hidden">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <i data-lucide="help-circle" class="w-4 h-4 text-gcp-yellow"></i> Practice Quiz Question
+              </h4>
+              <div class="bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg p-4 space-y-4 shadow-sm">
+                <p id="quiz-question" class="text-xs md:text-sm font-semibold text-slate-900 dark:text-white leading-relaxed">Question content?</p>
+                <div id="quiz-options" class="flex flex-col space-y-2">
+                  <!-- Dynamically populated options buttons -->
+                </div>
+                <div class="flex justify-between items-center mt-4">
+                  <span id="quiz-status" class="text-xs font-semibold text-slate-500 dark:text-slate-400">Not Answered</span>
+                  <button id="quiz-submit-btn" onclick="submitQuizAnswer()" class="bg-gcp-blue text-white dark:bg-gcp-yellow dark:text-slate-950 hover:opacity-90 px-4 py-1.5 rounded-md font-bold text-xs transition shadow-sm">Check Answer</button>
+                </div>
+                <div id="quiz-feedback" class="hidden p-3 text-xs leading-relaxed border rounded">
+                  <!-- Explanation feedback -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab 2: Flashcards Deck View (Full screen container) -->
+    <div id="view-flashcards" class="hidden flex-1 p-8 flex flex-col items-center justify-start overflow-y-auto no-scrollbar bg-slate-100 dark:bg-slate-950 transition-colors duration-300">
+      <div class="max-w-xl w-full flex flex-col space-y-6">
+        <!-- Filter and Progress Bar -->
+        <div class="flex items-center justify-between flex-wrap gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 shadow-md transition-colors">
+          <div class="flex flex-col">
+            <span class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider">Flashcard Progress</span>
+            <span class="text-sm font-bold text-slate-900 dark:text-white mt-1"><span id="cards-reviewed-count">0</span> / <span id="cards-total-count">0</span> Reviewed</span>
+          </div>
+          
+          <!-- Category select filter -->
+          <div class="flex items-center space-x-2">
+            <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Category:</span>
+            <select id="flashcard-category-filter" onchange="filterFlashcards(this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-gcp-blue shadow-sm">
+              <option value="All">All Categories</option>
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+        </div>
+        
+        <!-- 3D Card Container -->
+        <div class="flashcard-container w-full h-80 cursor-pointer" onclick="flipFlashcard()">
+          <div id="active-flashcard" class="flashcard w-full h-full relative duration-500">
+            <!-- Front of card -->
+            <div class="flashcard-front absolute inset-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700/80 rounded-2xl p-8 flex flex-col justify-between shadow-lg transition">
+              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <span id="fc-category-badge" class="text-[10px] font-extrabold uppercase px-2.5 py-1 bg-gcp-blue/10 text-gcp-blue rounded-full tracking-wider">IAM & Hierarchy</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium"><i data-lucide="flip-horizontal" class="w-3.5 h-3.5"></i> Click to Flip</span>
+              </div>
+              <div class="flex-1 flex items-center justify-center text-center px-4 py-6">
+                <p id="fc-front-text" class="text-base md:text-lg font-bold text-slate-900 dark:text-white leading-relaxed">Flashcard Question Front Content?</p>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Question</span>
+                <span id="fc-index-indicator" class="text-xs font-semibold text-slate-500 dark:text-slate-400">Card 1 of 15</span>
+              </div>
+            </div>
+            <!-- Back of card -->
+            <div class="flashcard-back absolute inset-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 flex flex-col justify-between shadow-lg">
+              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <span id="fc-category-badge-back" class="text-[10px] font-extrabold uppercase px-2.5 py-1 bg-gcp-green/10 text-gcp-green rounded-full tracking-wider">Answer</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium"><i data-lucide="flip-horizontal" class="w-3.5 h-3.5"></i> Click to Flip</span>
+              </div>
+              <div class="flex-1 flex items-center justify-center text-center px-4 py-6 overflow-y-auto no-scrollbar">
+                <p id="fc-back-text" class="text-sm md:text-base font-semibold text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">Flashcard Answer Back Content?</p>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Answer Explanation</span>
+                <span id="fc-index-indicator-back" class="text-xs font-semibold text-slate-500 dark:text-slate-400">Card 1 of 15</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Flashcard Controls -->
+        <div class="flex items-center justify-between space-x-4">
+          <button onclick="prevFlashcard()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-white font-semibold border border-slate-200 dark:border-slate-800 px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Prev Card
+          </button>
+          
+          <div class="flex space-x-3 flex-1 justify-center">
+            <button onclick="markFlashcardStatus(false)" class="bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-900/40 px-5 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="help-circle" class="w-4 h-4"></i> Review Later
+            </button>
+            <button onclick="markFlashcardStatus(true)" class="bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 border border-green-200 dark:border-green-900/40 px-5 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="check-circle" class="w-4 h-4"></i> Mastered!
+            </button>
+          </div>
+          
+          <button onclick="nextFlashcard()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-white font-semibold border border-slate-200 dark:border-slate-800 px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-sm">
+            Next Card <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+  </main>
+
+  <script>
+    // --- MIND MAP DATA STRUCTURE ---
+    const mindMapData = {
+      id: "gcp-ace",
+      name: "GCP Associate Cloud Engineer",
+      color: "#4285F4", // Google Blue
+      description: "The core certification for deploying, monitoring, and maintaining projects on Google Cloud Platform.",
+      children: [
+        {
+          id: "iam-hierarchy",
+          name: "IAM & Resource Hierarchy",
+          color: "#EA4335", // Google Red
+          description: "Organizing resources, controlling billing, and enforcing permissions in Google Cloud.",
+          children: [
+            {
+              id: "resource-hierarchy",
+              name: "Resource Hierarchy",
+              color: "#EA4335",
+              description: "Structured mapping of resources: Organization > Folders > Projects > Resources.",
+              details: {
+                concepts: [
+                  "<strong>Organization Node:</strong> The root level mapping to a company. Inherited by default with Cloud Identity / Google Workspace.",
+                  "<strong>Folders:</strong> Logical groups of projects. Used to organize by departments, teams, or environments (e.g. dev/prod). Folders can be nested.",
+                  "<strong>Projects:</strong> The base organizing entity. All resources must belong to a single project. Carries Project Name (mutable), Project ID (immutable, unique), and Project Number (immutable, unique).",
+                  "<strong>Resources:</strong> The actual cloud assets (VMs, Cloud Storage buckets, DBs, etc.)."
+                ],
+                examTips: "IAM policies are inherited down the hierarchy and are strictly <strong>ADDITIVE</strong>. If permissions are granted at the Folder level, you CANNOT restrict or revoke them at the Project or Resource level below it.",
+                commands: [
+                  "gcloud organizations list",
+                  "gcloud projects create PROJECT_ID --name=\"Project Name\" --folder=FOLDER_ID",
+                  "gcloud projects list"
+                ]
+              }
+            },
+            {
+              id: "iam-roles",
+              name: "IAM Roles & Identities",
+              color: "#EA4335",
+              description: "Granting permissions using roles for human identities or machine services.",
+              details: {
+                concepts: [
+                  "<strong>Basic Roles:</strong> Owner (full control, billing, manage permissions), Editor (modify + deploy), Viewer (read-only). Highly generic, avoid in prod.",
+                  "<strong>Predefined Roles:</strong> Fine-grained permissions defined and maintained by Google (e.g., Storage Object Viewer). Standard best practice.",
+                  "<strong>Custom Roles:</strong> User-defined roles with specific fine-grained permissions. <em>Limitation:</em> Can only be created at the Project or Org level, NOT at the Folder level.",
+                  "<strong>Service Accounts (SAs):</strong> Identities for workloads. Use <em>Workload Identity</em> in GKE instead of long-lived JSON keys to access APIs securely."
+                ],
+                examTips: "Never email or store Service Account JSON keys. Use Service Account Impersonation (granting `roles/iam.serviceAccountUser` role) so developers can safely generate tokens dynamically.",
+                commands: [
+                  "gcloud iam roles describe roles/compute.admin",
+                  "gcloud iam service-accounts create my-sa-name --display-name=\"My Service Account\"",
+                  "gcloud projects add-iam-policy-binding PROJECT_ID --member=\"serviceAccount:my-sa-name@PROJECT_ID.iam.gserviceaccount.com\" --role=\"roles/storage.objectViewer\""
+                ]
+              }
+            },
+            {
+              id: "billing",
+              name: "Billing & Budget Alerts",
+              color: "#EA4335",
+              description: "Managing payment connections, monitoring cloud spends, and cost-export pipelines.",
+              details: {
+                concepts: [
+                  "<strong>Billing Accounts:</strong> Store payment methods. Must be linked to projects to activate billable resources.",
+                  "<strong>Budgets & Alerts:</strong> Set dollar limits with threshold percentage alerts (e.g., 50%, 90%, 100%). Budgets only trigger emails/notifications, they <strong>DO NOT</strong> automatically stop resources.",
+                  "<strong>Billing Export:</strong> Highly scalable mechanism that streams detailed, sub-hour billing records to BigQuery for SQL analysis and dashboarding."
+                ],
+                examTips: "Since budgets do not shut down resources, you must configure a Pub/Sub alert channel and connect it to a Cloud Function. The function uses the Compute/GKE API to terminate/disable resources programmatically upon budget exhaustion.",
+                commands: [
+                  "gcloud beta billing accounts list",
+                  "gcloud beta billing projects link PROJECT_ID --billing-account=ACCOUNT_ID"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          id: "compute",
+          name: "Compute & Containers",
+          color: "#34A853", // Google Green
+          description: "Infrastructure options spanning GCE Virtual Machines, GKE Container Clusters, and Serverless.",
+          children: [
+            {
+              id: "compute-engine",
+              name: "Compute Engine (GCE)",
+              color: "#34A853",
+              description: "Infrastructure as a Service (IaaS) virtual machines, auto-scaling, and disk snapshots.",
+              details: {
+                concepts: [
+                  "<strong>Machine Families:</strong> General-purpose (E2, N2), Compute-optimized (C2), Memory-optimized (M2), Shared-core (e2-micro).",
+                  "<strong>Spot / Preemptible VMs:</strong> Highly discounted (up to 90%) compute capacity. Can be shut down by Google with a 30-sec warning at any time. Max lifetime of 24h is no longer enforced for Spot VMs.",
+                  "<strong>Managed Instance Groups (MIGs):</strong> Identical VMs cloned from an <em>Instance Template</em>. High availability via auto-healing (recreates VMs failing HTTP health checks) and multi-zone scaling.",
+                  "<strong>Snapshots:</strong> Point-in-time backup of persistent disks. Stored globally and incrementally."
+                ],
+                examTips: "Use MIG Autohealing to automatically recreate broken instances using application health check signals. Choose Spot VMs for stateless, batch-processing workloads that are highly fault-tolerant.",
+                commands: [
+                  "gcloud compute instances create my-vm --zone=us-central1-a --machine-type=e2-medium --image-family=debian-11 --image-project=debian-cloud",
+                  "gcloud compute instances start my-vm --zone=us-central1-a",
+                  "gcloud compute instance-groups managed create my-mig --template=my-template --size=3 --zone=us-central1-a"
+                ]
+              }
+            },
+            {
+              id: "gke",
+              name: "Kubernetes Engine (GKE)",
+              color: "#34A853",
+              description: "Fully managed enterprise Kubernetes platform, billing options, and node architectures.",
+              details: {
+                concepts: [
+                  "<strong>Standard Mode:</strong> You own and manage cluster nodes, sizing node pools, triggering OS updates, and configuring autoscaling.",
+                  "<strong>Autopilot Mode:</strong> Google manages and secures the node infrastructure, scaling, and OS updates completely. You pay ONLY for G8s Pod resources requested (CPU, RAM, Storage). No node management overhead.",
+                  "<strong>Node Pools:</strong> Groups of identical node configurations inside a cluster.",
+                  "<strong>Workload Identity:</strong> Resolves access key liabilities. Bridges a G8s Service Account with a GCP IAM Service Account so pods authenticate securely using metadata."
+                ],
+                examTips: "Always choose Autopilot for minimal cluster operational overhead. Never store long-lived GCP service account key JSON files inside pods; implement GKE Workload Identity instead.",
+                commands: [
+                  "gcloud container clusters create-auto my-cluster --region=us-central1",
+                  "gcloud container clusters get-credentials my-cluster --region=us-central1",
+                  "kubectl get nodes"
+                ]
+              }
+            },
+            {
+              id: "serverless",
+              name: "Serverless (Cloud Run/Functions)",
+              color: "#34A853",
+              description: "Containerized and event-driven serverless architectures with auto-scaling.",
+              details: {
+                concepts: [
+                  "<strong>Cloud Run:</strong> Serverless engine that runs arbitrary Docker containers. Automatically scales from 0 to thousands of pods. Triggered by HTTP traffic or Pub/Sub events.",
+                  "<strong>Cloud Functions:</strong> Serverless code blocks (FaaS) executed in response to background events (Pub/Sub notifications, GCS file uploads, HTTP).",
+                  "<strong>App Engine (GAE):</strong> PaaS for web monolithic deployments. Standard Environment (sandboxed, faster scale, restricted runtimes) vs Flexible Environment (Docker containers, slower scale)."
+                ],
+                examTips: "If the application is containerized and needs to scale to zero on idle, choose Cloud Run. For fast, lightweight event processing (e.g. converting uploaded images to thumbnails in storage), choose Cloud Functions.",
+                commands: [
+                  "gcloud run deploy my-service --source=. --region=us-central1 --allow-unauthenticated",
+                  "gcloud functions deploy my-func --runtime=nodejs18 --trigger-http --allow-unauthenticated"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          id: "networking",
+          name: "VPC & Networking",
+          color: "#4285F4", // Google Blue
+          description: "Global networks, regional subnets, secure firewalls, and global traffic routing.",
+          children: [
+            {
+              id: "vpc",
+              name: "VPC & Subnets",
+              color: "#4285F4",
+              description: "Virtual Private Cloud networks, firewall configurations, and private google APIs access.",
+              details: {
+                concepts: [
+                  "<strong>Global VPC Scope:</strong> Google Cloud VPC networks are global. Subnets are regional. Multi-region architectures do not require transit peering.",
+                  "<strong>Auto Mode VPC:</strong> Automatically provisions subnets in every region. Overlaps subnets, unsuitable for prod. <strong>Custom Mode:</strong> You manually define subnet ranges (highly recommended).",
+                  "<strong>Firewall Rules:</strong> Stateful filters. For optimal enterprise security, target rules to <em>Service Accounts</em> instead of Network Tags to prevent spoofing by VM admins.",
+                  "<strong>Private Google Access:</strong> Setting on a subnet that allows internal-IP-only VMs to connect to Google APIs/services safely (e.g. Cloud Storage, BigQuery)."
+                ],
+                examTips: "Enable 'Private Google Access' on the subnet if you have VMs with no external IP addresses that need to read/write objects to Cloud Storage. Deploy a <em>Cloud NAT</em> gateway if these same internal VMs need outbound internet access to download software updates.",
+                commands: [
+                  "gcloud compute networks create my-vpc --subnet-mode=custom",
+                  "gcloud compute networks subnets create my-subnet --network=my-vpc --region=us-central1 --range=10.0.0.0/24 --enable-private-ip-google-access",
+                  "gcloud compute firewall-rules create allow-http --network=my-vpc --allow=tcp:80 --target-tags=http-server"
+                ]
+              }
+            },
+            {
+              id: "load-balancing",
+              name: "Load Balancing (LB)",
+              color: "#4285F4",
+              description: "Routing traffic globally or regionally, internal vs external load balancers.",
+              details: {
+                concepts: [
+                  "<strong>Global HTTP(S) LB (Application):</strong> Uses a single global Anycast IP address. Directs traffic to the closest healthy region based on user latency. Performs SSL offloading at edge.",
+                  "<strong>Regional Load Balancing:</strong> Passthrough Network Load Balancer (TCP/UDP, high-performance, preserves client IPs) or Regional Application LB.",
+                  "<strong>Internal Load Balancer:</strong> Deploys a regional proxy inside your VPC for private microservice-to-microservice traffic routing."
+                ],
+                examTips: "Choose the Global Application Load Balancer if the exam asks for cross-region latency routing, SSL offloading at Google's edge, or URL-based content routing (e.g. `/video` vs `/images`). Choose Passthrough NLB for raw TCP/UDP that doesn't need SSL termination.",
+                commands: [
+                  "gcloud compute forwarding-rules list"
+                ]
+              }
+            },
+            {
+              id: "connectivity",
+              name: "Hybrid & VPC Peering",
+              color: "#4285F4",
+              description: "Peering virtual clouds, HA VPNs, Shared VPC architecture, and Interconnects.",
+              details: {
+                concepts: [
+                  "<strong>VPC Peering:</strong> Connects two VPCs so resources talk privately. <em>Limitation:</em> Peering is <strong>non-transitive</strong> (A peered to B, B to C; A cannot talk to C).",
+                  "<strong>Shared VPC:</strong> Connects subnets from a designated 'host project' to separate 'service projects', centralizing net-admin control.",
+                  "<strong>Cloud HA VPN:</strong> Secure IPsec tunnel over public internet. Uses 2 tunnels to provide 99.99% availability SLA. Limits throughput to 3 Gbps per tunnel.",
+                  "<strong>Cloud Interconnect:</strong> Direct physical link. Dedicated Interconnect (10G/100G fiber) vs Partner Interconnect (via local ISP)."
+                ],
+                examTips: "If the requirements call for high bandwidth (10Gbps+), low latency, and a physical enterprise connection with NO internet, select Cloud Interconnect. For a fast, cost-effective, encrypted connection over the internet, select HA VPN."
+              }
+            }
+          ]
+        },
+        {
+          id: "storage-db",
+          name: "Storage & Databases",
+          color: "#F4B400", // Google Yellow
+          description: "Serverless object storage, relational databases, and high-performance NoSQL systems.",
+          children: [
+            {
+              id: "cloud-storage",
+              name: "Cloud Storage (GCS)",
+              color: "#F4B400",
+              description: "Object storage classes, cost optimization, bucket lock, and signed URLs.",
+              details: {
+                concepts: [
+                  "<strong>Storage Classes:</strong> Standard (frequent access), Nearline (< once/month, 30d min), Coldline (< once/quarter, 90d min), Archive (< once/year, 360d min for disasters).",
+                  "<strong>Object Lifecycle:</strong> Rules to automatically move older files to colder storage classes or delete them to optimize cost.",
+                  "<strong>Access Control:</strong> Uniform Bucket-Level Access (IAM-only bucket-wide, recommended) vs Fine-Grained (IAM + individual object ACLs).",
+                  "<strong>Signed URLs:</strong> Generate temporary access keys allowing users without Google accounts to upload/download specific files."
+                ],
+                examTips: "Use GCS <strong>Bucket Lock</strong> with a Retention Policy to comply with strict regulatory mandates that prohibit file deletion for N years. Object Versioning is used to recover deleted or overwritten files easily.",
+                commands: [
+                  "gcloud storage buckets create gs://my-unique-bucket-id --location=us-central1",
+                  "gcloud storage cp file.txt gs://my-unique-bucket-id/file.txt",
+                  "gcloud storage buckets update gs://my-unique-bucket-id --uniform-bucket-level-access"
+                ]
+              }
+            },
+            {
+              id: "databases",
+              name: "Relational & NoSQL DBs",
+              color: "#F4B400",
+              description: "Relational options (Cloud SQL/Spanner) vs NoSQL options (Firestore/Bigtable) vs BigQuery.",
+              details: {
+                concepts: [
+                  "<strong>Cloud SQL:</strong> Managed MySQL, PostgreSQL, or SQL Server. Supports regional read replicas, failovers, and handles up to 30TB.",
+                  "<strong>Cloud Spanner:</strong> Globally distributed, horizontally scalable enterprise relational DB. Guarantees strong consistency and high availability (99.999% SLA).",
+                  "<strong>Firestore:</strong> Serverless NoSQL document database. Ideal for mobile/web app state, real-time sync, and complex query filtering.",
+                  "<strong>Cloud Bigtable:</strong> Low-latency (<10ms), massive-scale NoSQL wide-column DB. Ideal for telemetry, IoT, time-series, or data exceeding 1TB.",
+                  "<strong>BigQuery:</strong> Serverless SQL analytical data warehouse. Fast queries on petabytes."
+                ],
+                examTips: "Choose <strong>Cloud Spanner</strong> ONLY if the exam explicitly demands a relational database that scales horizontally across regions with global consistency. Choose <strong>Bigtable</strong> for low-latency IoT/telemetry writes. Choose <strong>BigQuery</strong> for read-heavy analytical reporting and data warehousing.",
+                commands: [
+                  "gcloud sql instances create my-db --database-version=POSTGRES_15 --tier=db-custom-1-3840 --region=us-central1"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          id: "operations-devops",
+          name: "Operations & DevOps",
+          color: "#AB47BC", // Google Purple
+          description: "Monitoring, logging sinks, CI/CD pipelines, and Infrastructure as Code.",
+          children: [
+            {
+              id: "observability",
+              name: "Observability (Operations)",
+              color: "#AB47BC",
+              description: "Cloud Monitoring, Logging router, and exporting logs via sinks.",
+              details: {
+                concepts: [
+                  "<strong>Cloud Logging:</strong> Central storage for logs. Default retention is 30 days.",
+                  "<strong>Log Router & Sinks:</strong> Streams logs from router to destinations: Cloud Storage (compliance), BigQuery (SQL analysis), Pub/Sub (streaming to third-party tools like Splunk/Datadog), or log buckets.",
+                  "<strong>Cloud Monitoring:</strong> Real-time dashboards, custom alerting policies, and health uptime checks.",
+                  "<strong>Log-Based Metrics:</strong> Scans log text streams to graph numerical rates (e.g., counting database connection timeouts to alert automatically)."
+                ],
+                examTips: "To keep logs long-term (e.g., years) at the lowest cost, create a Log Sink to export to Cloud Storage. To perform real-time SQL analysis on logs, sink them to BigQuery. For third-party SIEM/Splunk streams, sink to Pub/Sub.",
+                commands: [
+                  "gcloud logging write my-test-log \"Test database connection error\" --severity=ERROR",
+                  "gcloud logging sinks create my-bq-sink bigquery.googleapis.com/projects/my-project/datasets/my_logs --log-filter=\"severity>=ERROR\""
+                ]
+              }
+            },
+            {
+              id: "deployment-iac",
+              name: "Deployment, CI/CD, IaC",
+              color: "#AB47BC",
+              description: "Serverless builds, container registries, and Terraform state management.",
+              details: {
+                concepts: [
+                  "<strong>Cloud Build:</strong> Serverless CI/CD builder. Runs tasks inside Docker containers based on a declarative `cloudbuild.yaml` file.",
+                  "<strong>Artifact Registry:</strong> Replaced Container Registry (GCR). Securely stores Docker images, npm, Maven, Python, and OS packages.",
+                  "<strong>Terraform:</strong> Declares infrastructure as code (IaC). Best practice involves storing the Terraform <em>state file</em> (`terraform.tfstate`) in a secure Cloud Storage bucket with object versioning enabled to prevent state corruption."
+                ],
+                examTips: "Always use Artifact Registry (not GCR) in exam scenarios. When deploying infrastructure via Terraform, store state files remotely in a GCS bucket with Object Versioning to support team collaboration and state recovery.",
+                commands: [
+                  "gcloud builds submit --config=cloudbuild.yaml --tag=gcr.io/my-project/my-image:1.0 ."
+                ]
+              }
+            }
+          ]
+        },
+        {
+          id: "exam-prep",
+          name: "Exam Info & Practice",
+          color: "#00B0FF", // Cyan/Light Blue
+          description: "Crucial exam metadata, study plan schedule, and next certification paths.",
+          children: [
+            {
+              id: "exam-format",
+              name: "Exam Details & Policy",
+              color: "#00B0FF",
+              description: "Format, registration steps, pricing, and testing modes.",
+              details: {
+                concepts: [
+                  "<strong>Exam Scope:</strong> 2 hours, 50 to 60 multiple-choice or multiple-select questions.",
+                  "<strong>Cost:</strong> $125 USD. Voucher checks are recommended via corporate partner programs.",
+                  "<strong>Validation:</strong> Valid for 3 years before requiring recertification.",
+                  "<strong>Testing Options:</strong> Online proctored (from home, requires webcam and secure browser) OR Onsite at Kryterion Test Centers."
+                ],
+                examTips: "Create an account on Webassessor (by Kryterion) using your legal name <strong>EXACTLY</strong> as it appears on your passport or ID. Complete a system test prior to booking an online exam to ensure full software compatibility."
+              }
+            },
+            {
+              id: "next-certification",
+              name: "What's Next?",
+              color: "#00B0FF",
+              description: "Certification pipeline, professional tracks, and strategic roles.",
+              details: {
+                concepts: [
+                  "<strong>Professional Cloud DevOps Engineer:</strong> The perfect follow-up. Aligns with CI/CD pipelines, Kubernetes, Observability (OTel/Splunk), and GitOps.",
+                  "<strong>Professional Cloud Architect (PCA):</strong> High-level system design, migration frameworks, and cloud governance.",
+                  "<strong>Generative AI Leader:</strong> Quick-win credential aligning with Google Gemini enterprise initiatives."
+                ],
+                examTips: "Completing the Associate level gives you an excellent baseline of CLI commands and core console operations. The Professional level shifts focus from 'how to configure' to 'how to architect based on cost/compliance constraint'."
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    // Partition children for Left/Right split mindmap
+    const leftChildren = mindMapData.children.filter((_, i) => i % 2 === 0);
+    const rightChildren = mindMapData.children.filter((_, i) => i % 2 !== 0);
+
+    // --- QUIZ QUESTION DATABASE ---
+    const quizDatabase = {
+      "resource-hierarchy": {
+        question: "You want to apply a security policy that allows read-only access to all Cloud Storage buckets across your entire enterprise. You have hundreds of projects organized into different departments (Folders). What is the most efficient way to configure this?",
+        options: [
+          "A. Grant the Storage Object Viewer role to the group at the Organization level.",
+          "B. Grant the Storage Object Viewer role to the group in each individual project.",
+          "C. Create a Custom Role with storage.objects.get permissions at the Folder level.",
+          "D. Grant the Storage Admin role at the Organization level."
+        ],
+        answer: 0,
+        explanation: "Granting the predefined Storage Object Viewer role at the Organization level is the most efficient and secure way. Thanks to policy inheritance, this permission automatically flows down to all folders, projects, and buckets. Individual project assignment is inefficient. Custom roles cannot be created at the Folder level (only Org/Project)."
+      },
+      "iam-roles": {
+        question: "A developer needs to deploy a containerized application to GKE and retrieve some secret configuration from Secret Manager during startup. Following the principle of least privilege, how should you configure access?",
+        options: [
+          "A. Export a JSON key for the Project Editor service account and store it in a GKE Secret.",
+          "B. Create a dedicated Service Account, grant it Secret Manager Secret Accessor, and configure GKE Workload Identity to bind it to the Pod's Kubernetes Service Account.",
+          "C. Enable Private Google Access on the subnet so that the GKE Pod can access Secret Manager without any IAM roles.",
+          "D. Assign the Compute Admin role to the GKE node pool so that all pods can access all project resources."
+        ],
+        answer: 1,
+        explanation: "GKE Workload Identity is the Google-recommended best practice for binding GKE workloads to GCP IAM identities. Exporting JSON keys is a security risk. Private Google Access allows routing to Google APIs without external IPs, but does not bypass IAM authorization. Granting wide roles to GKE nodes violates the principle of least privilege."
+      },
+      "billing": {
+        question: "Your company wants to prevent unexpected high costs. You set up a billing budget of $500 for a development project with alert thresholds at 50%, 90%, and 100%. What happens when the project's actual spend reaches $510?",
+        options: [
+          "A. Google automatically stops all running Compute Engine instances and shuts down databases in the project.",
+          "B. An email alert is sent to Billing Admins, but all resources continue to run and accumulate costs.",
+          "C. The project is suspended and billing is paused until manual intervention.",
+          "D. Google restricts resource creation, allowing only read-only access to existing storage."
+        ],
+        answer: 1,
+        explanation: "By default, billing budgets and alerts do NOT stop resources or stop billing. They only trigger email alerts (and optionally Pub/Sub notifications). To actually stop resources on budget exhaustion, you must configure a Pub/Sub topic and write a custom Cloud Function to automate stopping VMs or billing."
+      },
+      "compute-engine": {
+        question: "You need to run a batch processing job that is highly fault-tolerant and can survive occasional interruptions. It takes 12 hours to complete. You want to minimize the compute costs. Which instance type should you choose?",
+        options: [
+          "A. General Purpose E2 instances with sustained use discounts.",
+          "B. Dedicated Sole-Tenant nodes.",
+          "C. Spot VMs with standard persistent disks.",
+          "D. Compute-Optimized C2 instances with 1-year committed use contracts."
+        ],
+        answer: 2,
+        explanation: "Spot VMs offer discounts up to 90% compared to on-demand pricing, which is ideal for fault-tolerant workloads. Since the batch job is fault-tolerant and can survive interruptions, Spot VMs are the most cost-effective solution."
+      },
+      "gke": {
+        question: "You are preparing to run a stateless web application on GKE. You want to minimize operational overhead, including cluster provisioning, node management, scaling, and OS security patching. Which GKE cluster type should you choose?",
+        options: [
+          "A. GKE Standard cluster with manual node provisioning.",
+          "B. GKE Standard cluster with cluster autoscaler enabled.",
+          "C. GKE Autopilot cluster.",
+          "D. GKE multi-zone cluster using Spot VMs."
+        ],
+        answer: 2,
+        explanation: "GKE Autopilot manages the entire node infrastructure for you, including provisioning, auto-scaling, node upgrades, and security patching. Standard cluster types require you to manage node pools and OS scaling, which increases operational overhead."
+      },
+      "serverless": {
+        question: "You have a Spring Boot web application packaged in a Docker container. It is a stateless service that receives HTTP traffic and needs to scale up quickly in response to traffic spikes, but scale down to zero when there is no traffic to minimize costs. What is the best GCP hosting option?",
+        options: [
+          "A. App Engine Standard Environment.",
+          "B. Google Kubernetes Engine (GKE) Autopilot.",
+          "C. Cloud Run.",
+          "D. Cloud Functions."
+        ],
+        answer: 2,
+        explanation: "Cloud Run is designed specifically to run containerized stateless applications serverlessly, scaling up rapidly on HTTP requests and scaling to zero when idle. App Engine Standard cannot run custom arbitrary containers. GKE Autopilot does not scale to zero by default. Cloud Functions runs code blocks, not complete containerized Spring Boot applications easily."
+      },
+      "vpc": {
+        question: "You need to deploy virtual machine instances that must not have external (public) IP addresses for security reasons. However, these instances still need to connect to the internet to download software updates and security patches. How should you design this?",
+        options: [
+          "A. Enable Private Google Access on the subnet.",
+          "B. Deploy a Cloud NAT gateway and route outbound internet traffic through it.",
+          "C. Set up a Global Load Balancer to forward traffic.",
+          "D. Configure a VPC Peering network with a default route."
+        ],
+        answer: 1,
+        explanation: "Cloud NAT (Network Address Translation) allows GCP virtual machines without external IP addresses to securely access the internet for outbound connections (like downloading packages) while blocking inbound internet connections. Private Google Access only allows reaching Google APIs (like GCS/BigQuery), not general internet."
+      },
+      "load-balancing": {
+        question: "Your team has deployed a web application across two different GCP regions: us-east1 and europe-west1. You want a single IP address to route global users automatically to the region closest to them with minimal latency, and fall back if one region goes down. Which load balancer should you use?",
+        options: [
+          "A. Regional Application Load Balancer.",
+          "B. Global Application Load Balancer.",
+          "C. Proxy Network Load Balancer.",
+          "D. Regional Passthrough Network Load Balancer."
+        ],
+        answer: 1,
+        explanation: "The Global Application Load Balancer (HTTP/S) uses a single global Anycast IP address and routes users automatically to the nearest healthy backend region (latency-based routing). Regional load balancers cannot span multiple regions or use a single global Anycast IP."
+      },
+      "connectivity": {
+        question: "You are setting up VPC Peering between VPC-A and VPC-B. VPC-B is already peered with VPC-C. After successfully establishing peering between VPC-A and VPC-B, developers in VPC-A report they cannot reach databases in VPC-C. Why?",
+        options: [
+          "A. VPC Peering is non-transitive. VPC-A cannot access VPC-C through VPC-B.",
+          "B. You forgot to enable private DNS resolution in VPC Peering configuration.",
+          "C. VPC Peering requires dynamic routing to be enabled with Cloud Router.",
+          "D. You must configure static firewall rules to forward peered traffic."
+        ],
+        answer: 0,
+        explanation: "VPC Peering is non-transitive. Only directly peered VPC networks can communicate. Since A is peered with B, and B is peered with C, A cannot communicate with C unless you create a direct VPC Peering connection between A and C, or route through a VPN/Interconnect hub."
+      },
+      "cloud-storage": {
+        question: "You need to store financial transaction audits for regulatory compliance. These files must be retained for 7 years, are accessed less than once a year, but must be preserved from deletion during this period. What GCS features should you configure?",
+        options: [
+          "A. Standard Storage Class with Fine-Grained access control.",
+          "B. Archive Storage Class with a Retention Policy in a Bucket Lock.",
+          "C. Coldline Storage Class with Object Versioning enabled.",
+          "D. Nearline Storage Class with Signed URLs."
+        ],
+        answer: 1,
+        explanation: "Archive Storage Class is the most cost-effective for data accessed less than once a year. A GCS Bucket Lock with a Retention Policy of 7 years ensures that objects cannot be deleted or overwritten by anyone, including administrators, for compliance purposes."
+      },
+      "databases": {
+        question: "Your development team is planning to build a global application that requires a relational database. It expects millions of transactions per second from users in Asia, Europe, and America, and requires absolute, strong global consistency and high-availability (99.999% SLA) for multi-region writes. What database should you recommend?",
+        options: [
+          "A. Cloud SQL for PostgreSQL with read replicas in other regions.",
+          "B. Cloud Spanner.",
+          "C. Cloud Bigtable.",
+          "D. AlloyDB with regional high availability."
+        ],
+        answer: 1,
+        explanation: "Cloud Spanner is the only relational database on GCP that offers global horizontal scale, multi-region synchronous writes, strong global consistency, and a 99.999% (five-nines) availability SLA. Cloud SQL Postgres and AlloyDB are regional databases with read-only replicas elsewhere, which do not support multi-region write scalability with strong consistency."
+      },
+      "observability": {
+        question: "You want to monitor your application log streams for specific database timeout errors (e.g., 'DB_TIMEOUT_LIMIT_REACHED'). When this error occurs, you want to trigger a dashboard alert and graph the frequency of these timeouts. How should you implement this?",
+        options: [
+          "A. Configure a Log Sink to export all logs to BigQuery, and run a scheduled query every minute.",
+          "B. Create a custom Log-Based Metric in Cloud Logging, and build a Cloud Monitoring alert policy based on that metric.",
+          "C. Write a script on a Compute Engine instance that polls the Logging API using gcloud.",
+          "D. Export logs to Cloud Storage and use a Python script to scan files."
+        ],
+        answer: 1,
+        explanation: "Log-Based Metrics in Cloud Logging scan incoming log streams in real-time. By creating a metric based on a filter matching 'DB_TIMEOUT_LIMIT_REACHED', you can easily graph the rate in Cloud Monitoring and define alert thresholds. Scheduled queries on BigQuery or script polling are highly inefficient and introduce latency."
+      },
+      "deployment-iac": {
+        question: "You are setting up a secure containerized deployment pipeline. Where should you store your compiled Docker images in GCP, and what tool should you use to deploy infrastructure consistently across development and production environments?",
+        options: [
+          "A. Docker Hub and Cloud Build.",
+          "B. Artifact Registry and Terraform.",
+          "C. Container Registry (GCR) and gcloud shell scripts.",
+          "D. Cloud Storage and Kubernetes YAML."
+        ],
+        answer: 1,
+        explanation: "Artifact Registry is the modern, recommended repository for Docker images on GCP (replacing GCR). Terraform is the industry-standard Infrastructure as Code (IaC) tool for consistent, declarative resource deployments across multiple GCP environments."
+      }
+    };
+
+    // --- STATE MANAGEMENT ---
+    let selectedNodeId = null;
+    let zoom = 0.85;
+    let panX = 120;
+    let panY = 60;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    
+    // User progress persistence
+    let userProgress = {};
+    let flashcardProgress = {};
+    
+    // Load state from LocalStorage on initialization
+    function loadState() {
+      const savedProgress = localStorage.getItem('gcp_ace_mindmap_progress');
+      if (savedProgress) {
+        userProgress = JSON.parse(savedProgress);
+      } else {
+        initializeNodeStatusRecursive(mindMapData);
+        saveProgressState();
+      }
+      
+      const savedFcProgress = localStorage.getItem('gcp_ace_flashcards_progress');
+      if (savedFcProgress) {
+        flashcardProgress = JSON.parse(savedFcProgress);
+      }
+    }
+    
+    function initializeNodeStatusRecursive(node) {
+      if (node.id !== 'gcp-ace') {
+        userProgress[node.id] = 'todo';
+      }
+      if (node.children) {
+        node.children.forEach(initializeNodeStatusRecursive);
+      }
+    }
+
+    function saveProgressState() {
+      localStorage.setItem('gcp_ace_mindmap_progress', JSON.stringify(userProgress));
+      updateOverallProgress();
+    }
+    
+    function getStudyStatus(node) {
+      if (!node.children || node.children.length === 0) {
+        return userProgress[node.id] || 'todo';
+      }
+      
+      let allChildren = [];
+      gatherLeafNodes(node, allChildren);
+      
+      const total = allChildren.length;
+      const mastered = allChildren.filter(id => userProgress[id] === 'mastered').length;
+      const learning = allChildren.filter(id => userProgress[id] === 'learning').length;
+      
+      if (mastered === total) return 'mastered';
+      if (mastered > 0 || learning > 0) return 'learning';
+      return 'todo';
+    }
+    
+    function gatherLeafNodes(node, leafArray) {
+      if (!node.children || node.children.length === 0) {
+        leafArray.push(node.id);
+        return;
+      }
+      node.children.forEach(c => gatherLeafNodes(c, leafArray));
+    }
+
+    function updateOverallProgress() {
+      let leafIds = [];
+      gatherLeafNodes(mindMapData, leafIds);
+      
+      const total = leafIds.length;
+      const mastered = leafIds.filter(id => userProgress[id] === 'mastered').length;
+      const learning = leafIds.filter(id => userProgress[id] === 'learning').length;
+      
+      const rawProgress = total > 0 ? ((mastered * 1 + learning * 0.5) / total) * 100 : 0;
+      const percentage = Math.round(rawProgress);
+      
+      document.getElementById('overall-progress-text').innerText = `${percentage}%`;
+      document.getElementById('overall-progress-bar').style.width = `${percentage}%`;
+    }
+
+    // --- LIGHT & DARK MODE ENGINE ---
+    // Read preference on start or default to light for maximum legibility!
+    function initTheme() {
+      let isDark = localStorage.getItem('gcp_mindmap_theme') === 'dark';
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      updateThemeUI(isDark);
+    }
+
+    function toggleTheme() {
+      const isDark = !document.documentElement.classList.contains('dark');
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('gcp_mindmap_theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('gcp_mindmap_theme', 'light');
+      }
+      updateThemeUI(isDark);
+      renderMindMap(); // Re-render Canvas with theme-specific high-contrast colors!
+    }
+
+    function updateThemeUI(isDark) {
+      const icon = document.getElementById('theme-icon');
+      const text = document.getElementById('theme-text');
+      if (icon && text) {
+        if (isDark) {
+          icon.setAttribute('data-lucide', 'sun');
+          text.innerText = "Light Mode";
+        } else {
+          icon.setAttribute('data-lucide', 'moon');
+          text.innerText = "Dark Mode";
+        }
+        lucide.createIcons();
+      }
+    }
+
+    // --- ACCESSIBILITY / HIGH CONTRAST COLOR SELECTOR ---
+    function getThemeColor(node, isDark) {
+      // Adjust brand colors slightly in light mode to meet WCAG AA contrast (4.5:1 ratio) against light backgrounds
+      if (!isDark) {
+        if (node.color === '#F4B400') return '#b25900'; // Darker amber gold
+        if (node.color === '#00B0FF') return '#007090'; // Darker cyan
+        if (node.color === '#34A853') return '#1e7b34'; // Darker green
+        if (node.color === '#4285F4') return '#1a54b2'; // Darker blue
+        if (node.color === '#EA4335') return '#b31412'; // Darker red
+        if (node.color === '#AB47BC') return '#7b1fa2'; // Darker purple
+      }
+      return node.color;
+    }
+
+    // --- RECURSIVE LAYOUT ENGINE ---
+    const xSpacing = 225;
+    const nodeHeight = 34;
+    const nodeSpacing = 14;
+
+    function getSubtreeHeight(node) {
+      if (node.collapsed) return nodeHeight + nodeSpacing;
+      if (!node.children || node.children.length === 0) return nodeHeight + nodeSpacing;
+      
+      let height = 0;
+      node.children.forEach(child => {
+        height += getSubtreeHeight(child);
+      });
+      return height;
+    }
+
+    function computeNodeLayout(node, x, startY, side) {
+      node.x = x;
+      node.side = side;
+      
+      if (node.collapsed || !node.children || node.children.length === 0) {
+        node.y = startY + nodeHeight / 2;
+        node.totalHeight = nodeHeight + nodeSpacing;
+        return;
+      }
+      
+      let totalHeight = getSubtreeHeight(node);
+      node.totalHeight = totalHeight;
+      node.y = startY + totalHeight / 2;
+      
+      let currentY = startY;
+      node.children.forEach(child => {
+        let nextX = side === 'left' ? x - xSpacing : x + xSpacing;
+        computeNodeLayout(child, nextX, currentY, side);
+        currentY += getSubtreeHeight(child);
+      });
+    }
+
+    function solveTreeLayout() {
+      // Center root node
+      mindMapData.x = 600;
+      mindMapData.y = 400;
+      
+      // Left side Layout
+      let leftTotalHeight = 0;
+      leftChildren.forEach(child => {
+        leftTotalHeight += getSubtreeHeight(child);
+      });
+      
+      let currentY = 400 - (leftTotalHeight / 2);
+      leftChildren.forEach(child => {
+        let height = getSubtreeHeight(child);
+        computeNodeLayout(child, 600 - xSpacing, currentY, 'left');
+        currentY += height;
+      });
+      
+      // Right side Layout
+      let rightTotalHeight = 0;
+      rightChildren.forEach(child => {
+        rightTotalHeight += getSubtreeHeight(child);
+      });
+      
+      currentY = 400 - (rightTotalHeight / 2);
+      rightChildren.forEach(child => {
+        let height = getSubtreeHeight(child);
+        computeNodeLayout(child, 600 + xSpacing, currentY, 'right');
+        currentY += height;
+      });
+    }
+
+    // --- SVG CANVAS RENDERER ---
+    function renderMindMap() {
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      // Update Grid dots & Canvas background dynamically
+      const gridDots = document.getElementById('grid-dots');
+      if (gridDots) {
+        gridDots.setAttribute('fill', isDark ? '#1e293b' : '#cbd5e1');
+      }
+      const svgBg = document.getElementById('mindmap-svg');
+      if (svgBg) {
+        svgBg.style.backgroundColor = isDark ? '#080c14' : '#f1f5f9';
+      }
+
+      solveTreeLayout();
+      drawConnections(isDark);
+      drawNodes(isDark);
+      updateTransform();
+      lucide.createIcons();
+    }
+
+    function drawConnections(isDark) {
+      const linesG = document.getElementById('lines-group');
+      linesG.innerHTML = '';
+      
+      leftChildren.forEach(child => {
+        const strokeColor = getThemeColor(child, isDark);
+        drawBezierCurve(mindMapData.x, mindMapData.y, child.x, child.y, strokeColor, isDark, linesG);
+        drawChildConnections(child, isDark, linesG);
+      });
+      
+      rightChildren.forEach(child => {
+        const strokeColor = getThemeColor(child, isDark);
+        drawBezierCurve(mindMapData.x, mindMapData.y, child.x, child.y, strokeColor, isDark, linesG);
+        drawChildConnections(child, isDark, linesG);
+      });
+    }
+
+    function drawChildConnections(node, isDark, parentEl) {
+      if (node.collapsed || !node.children) return;
+      node.children.forEach(child => {
+        const strokeColor = getThemeColor(node, isDark);
+        drawBezierCurve(node.x, node.y, child.x, child.y, strokeColor, isDark, parentEl);
+        drawChildConnections(child, isDark, parentEl);
+      });
+    }
+
+    function drawBezierCurve(x1, y1, x2, y2, color, isDark, parentEl) {
+      const cx1 = x1 + (x2 - x1) / 1.8;
+      const cy1 = y1;
+      const cx2 = x1 + (x2 - x1) / 2.2;
+      const cy2 = y2;
+      
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`);
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', '2.2');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', isDark ? '0.45' : '0.65');
+      path.setAttribute('class', 'connection-line');
+      parentEl.appendChild(path);
+    }
+
+    function drawNodes(isDark) {
+      const nodesG = document.getElementById('nodes-group');
+      nodesG.innerHTML = '';
+      
+      // Render root node
+      drawSingleNode(mindMapData, isDark, nodesG);
+      
+      // Render left side recursively
+      leftChildren.forEach(child => {
+        drawNodeRecursive(child, isDark, nodesG);
+      });
+      
+      // Render right side recursively
+      rightChildren.forEach(child => {
+        drawNodeRecursive(child, isDark, nodesG);
+      });
+    }
+
+    function drawNodeRecursive(node, isDark, parentEl) {
+      drawSingleNode(node, isDark, parentEl);
+      if (node.collapsed || !node.children) return;
+      node.children.forEach(child => {
+        drawNodeRecursive(child, isDark, parentEl);
+      });
+    }
+
+    function drawSingleNode(node, isDark, parentEl) {
+      const isRoot = node.id === 'gcp-ace';
+      const w = isRoot ? 240 : 170;
+      const h = isRoot ? 44 : 32;
+      const x = node.x - w / 2;
+      const y = node.y - h / 2;
+      
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('class', `node-element cursor-pointer group select-none ${selectedNodeId === node.id ? 'is-selected' : ''}`);
+      g.setAttribute('transform', `translate(${x}, ${y})`);
+      g.setAttribute('data-id', node.id);
+      
+      // Rectangle Card
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('width', w);
+      rect.setAttribute('height', h);
+      rect.setAttribute('rx', '8');
+      rect.setAttribute('ry', '8');
+      
+      // Theme colors for boxes
+      const brandColor = getThemeColor(node, isDark);
+      let fillVal, strokeVal, strokeWidthVal;
+      
+      if (isRoot) {
+        fillVal = isDark ? '#1e293b' : '#1e3a8a'; // Blue box
+        strokeVal = brandColor;
+        strokeWidthVal = '2';
+      } else if (selectedNodeId === node.id) {
+        fillVal = isDark ? '#1e293b' : '#f8fafc'; // active selection background
+        strokeVal = brandColor;
+        strokeWidthVal = '2.5';
+        if (isDark) {
+          rect.style.setProperty('--glow-color', brandColor);
+          rect.setAttribute('filter', 'url(#glow)');
+        }
+      } else {
+        fillVal = isDark ? '#0f172a' : '#ffffff'; // standard background
+        strokeVal = isDark ? '#1e293b' : '#cbd5e1'; // muted borders
+        strokeWidthVal = '1.2';
+      }
+      
+      rect.setAttribute('fill', fillVal);
+      rect.setAttribute('stroke', strokeVal);
+      rect.setAttribute('stroke-width', strokeWidthVal);
+      rect.setAttribute('class', 'transition-all duration-200 shadow-sm');
+      g.appendChild(rect);
+      
+      // Status dot (only for subtopics)
+      if (!isRoot) {
+        const status = getStudyStatus(node);
+        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        dot.setAttribute('cx', '12');
+        dot.setAttribute('cy', h / 2);
+        dot.setAttribute('r', '4');
+        
+        let colorClass = "fill-slate-400 dark:fill-slate-600"; // todo
+        if (status === 'learning') colorClass = "fill-gcp-yellow";
+        else if (status === 'mastered') colorClass = "fill-gcp-green";
+        
+        dot.setAttribute('class', `${colorClass} transition-all duration-300`);
+        g.appendChild(dot);
+      }
+      
+      // High-Contrast SVG text rendering (Fixes black text on dark background bug!)
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      const textX = isRoot ? w / 2 : 24;
+      label.setAttribute('x', textX);
+      label.setAttribute('y', h / 2 + 4.5);
+      
+      // Define exact high-contrast colors instead of relying on tailwind styles inside SVG
+      let textFill;
+      if (isRoot) {
+        textFill = '#ffffff'; // White text on dark blue root always
+      } else if (selectedNodeId === node.id) {
+        textFill = isDark ? '#ffffff' : '#0f172a'; // Maximum contrast active state
+      } else {
+        textFill = isDark ? '#cbd5e1' : '#1e293b'; // Crisp slate off-white vs slate-800
+      }
+      
+      label.setAttribute('fill', textFill);
+      label.setAttribute('class', `font-semibold select-none transition-all duration-200 ${isRoot ? 'text-[12px] md:text-[13px] font-extrabold' : 'text-[10px] md:text-[11px]'}`);
+      if (isRoot) {
+        label.setAttribute('text-anchor', 'middle');
+      }
+      label.textContent = node.name;
+      g.appendChild(label);
+      
+      // Plus / Minus Collapse toggle bubble
+      if (node.children && node.children.length > 0) {
+        const btnG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        const btnX = node.side === 'left' ? -6 : w - 6;
+        const btnY = h / 2 - 6;
+        btnG.setAttribute('transform', `translate(${btnX}, ${btnY})`);
+        btnG.setAttribute('class', 'expand-btn cursor-pointer');
+        
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '6');
+        circle.setAttribute('cy', '6');
+        circle.setAttribute('r', '6');
+        circle.setAttribute('fill', isDark ? '#1e293b' : '#f1f5f9');
+        circle.setAttribute('stroke', isDark ? '#334155' : '#cbd5e1');
+        circle.setAttribute('stroke-width', '1');
+        btnG.appendChild(circle);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', '6');
+        text.setAttribute('y', '9.5');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('fill', isDark ? '#cbd5e1' : '#334155');
+        text.setAttribute('class', 'text-[10px] font-bold select-none');
+        text.textContent = node.collapsed ? '+' : '−';
+        btnG.appendChild(text);
+        
+        // Toggle action
+        btnG.addEventListener('click', (e) => {
+          e.stopPropagation();
+          node.collapsed = !node.collapsed;
+          renderMindMap();
+        });
+        
+        g.appendChild(btnG);
+      }
+      
+      // Selection handler
+      g.addEventListener('click', () => {
+        selectNode(node.id);
+      });
+      
+      parentEl.appendChild(g);
+    }
+
+    // --- CANVAS ZOOM & PAN CONTROL ---
+    const svg = document.getElementById('mindmap-svg');
+    const zoomG = document.getElementById('zoom-container');
+
+    svg.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.node-element') || e.target.closest('.expand-btn')) return;
+      isDragging = true;
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+      svg.style.cursor = 'grabbing';
+    });
+
+    svg.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      panX = e.clientX - startX;
+      panY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      svg.style.cursor = 'grab';
+    });
+
+    svg.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = 1.08;
+      const rect = svg.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      const svgX = (mouseX - panX) / zoom;
+      const svgY = (mouseY - panY) / zoom;
+      
+      if (e.deltaY < 0) {
+        zoom *= zoomFactor;
+      } else {
+        zoom /= zoomFactor;
+      }
+      zoom = Math.max(0.15, Math.min(zoom, 3.5));
+      
+      panX = mouseX - svgX * zoom;
+      panY = mouseY - svgY * zoom;
+      
+      updateTransform();
+    });
+
+    function updateTransform() {
+      zoomG.setAttribute('transform', `translate(${panX}, ${panY}) scale(${zoom})`);
+    }
+
+    function zoomIn() {
+      zoom *= 1.15;
+      updateTransform();
+    }
+
+    function zoomOut() {
+      zoom /= 1.15;
+      updateTransform();
+    }
+
+    function resetZoom() {
+      zoom = 0.85;
+      panX = 120;
+      panY = 60;
+      updateTransform();
+    }
+
+    function expandAllNodes() {
+      toggleAllNodesRecursive(mindMapData, false);
+      renderMindMap();
+    }
+
+    function collapseAllNodes() {
+      toggleAllNodesRecursive(mindMapData, true);
+      renderMindMap();
+    }
+
+    function toggleAllNodesRecursive(node, collapse) {
+      if (node.children && node.id !== 'gcp-ace') {
+        node.collapsed = collapse;
+      }
+      if (node.children) {
+        node.children.forEach(c => toggleAllNodesRecursive(c, collapse));
+      }
+    }
+
+    // --- NODE SELECTION & DETAIL POPULATION ---
+    let activeQuizAnswer = null;
+
+    function findNodeById(node, id) {
+      if (node.id === id) return node;
+      if (node.children) {
+        for (let child of node.children) {
+          const res = findNodeById(child, id);
+          if (res) return res;
+        }
+      }
+      return null;
+    }
+
+    function selectNode(id) {
+      selectedNodeId = id;
+      const isDark = document.documentElement.classList.contains('dark');
+      renderMindMap(); // Highlights matching rect
+      
+      const node = findNodeById(mindMapData, id);
+      if (!node) return;
+      
+      // Update Sidebar
+      document.getElementById('sidebar-welcome').classList.add('hidden');
+      document.getElementById('sidebar-active-content').classList.remove('hidden');
+      
+      // Path breadcrumb
+      const parentNode = findParentNode(mindMapData, id);
+      let pathStr = "Topic";
+      if (parentNode) {
+        pathStr = `${parentNode.name} &nbsp;>&nbsp; ${node.name}`;
+      } else if (id === 'gcp-ace') {
+        pathStr = "Home";
+      }
+      document.getElementById('sidebar-path').innerHTML = pathStr;
+      
+      // Title
+      document.getElementById('sidebar-title').innerText = node.name;
+      
+      // Description Card
+      const descCard = document.getElementById('topic-description-card');
+      descCard.innerHTML = node.description;
+      descCard.style.borderColor = getThemeColor(node, isDark);
+      
+      // Render Status Selector
+      renderStatusSelector(node);
+
+      // Render Concepts List
+      const conceptsList = document.getElementById('concepts-list');
+      conceptsList.innerHTML = '';
+      
+      const hasDetails = node.details && node.details.concepts;
+      
+      if (hasDetails) {
+        node.details.concepts.forEach(concept => {
+          const li = document.createElement('li');
+          li.className = "flex items-start gap-2 text-slate-700 dark:text-slate-300 text-xs md:text-sm leading-relaxed";
+          // Bullet gets category specific coloring
+          li.innerHTML = `<span style="color: ${getThemeColor(node, isDark)}" class="font-bold text-base mt-[-4px] shrink-0">•</span> <span>${concept}</span>`;
+          conceptsList.appendChild(li);
+        });
+      } else {
+        // Parent folder nodes instructions
+        const li = document.createElement('li');
+        li.className = "flex items-start gap-2 text-slate-500 dark:text-slate-400 text-xs md:text-sm leading-relaxed italic";
+        li.innerHTML = `This category serves as an organizational group for fine-grained subtopics. Click on any of its outer sub-branches (e.g., ${node.children ? node.children.map(c=>c.name).join(', ') : 'connected leaves'}) to read high-yield exam sheets, CLI code snippets, and take interactive practice quizzes.`;
+        conceptsList.appendChild(li);
+      }
+
+      // Render Exam Traps
+      const trapsSec = document.getElementById('exam-pitfalls-section');
+      if (hasDetails && node.details.examTips) {
+        trapsSec.classList.remove('hidden');
+        document.getElementById('exam-pitfalls-card').innerHTML = node.details.examTips;
+      } else {
+        trapsSec.classList.add('hidden');
+      }
+
+      // Render gcloud CLI commands
+      const commandsSec = document.getElementById('gcloud-commands-section');
+      const commandsContainer = document.getElementById('commands-container');
+      commandsContainer.innerHTML = '';
+      
+      if (hasDetails && node.details.commands && node.details.commands.length > 0) {
+        commandsSec.classList.remove('hidden');
+        node.details.commands.forEach((cmd, idx) => {
+          const block = document.createElement('div');
+          block.className = "relative bg-slate-900 dark:bg-slate-950 border border-slate-800 dark:border-slate-800 rounded px-3 py-2 text-xs flex justify-between items-center group font-mono shadow-sm";
+          block.innerHTML = `
+            <span class="text-slate-200 break-all select-all pr-8 overflow-x-auto whitespace-nowrap scrollbar-none">${cmd}</span>
+            <button onclick="copyCommand(this, '${cmd.replace(/'/g, "\\'")}')" class="absolute right-2 top-2 p-1 bg-slate-850 dark:bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded opacity-0 group-hover:opacity-100 transition" title="Copy code">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            </button>
+          `;
+          commandsContainer.appendChild(block);
+        });
+        lucide.createIcons();
+      } else {
+        commandsSec.classList.add('hidden');
+      }
+
+      // Render Practice Quiz
+      const quizSec = document.getElementById('quiz-section');
+      const quiz = quizDatabase[node.id];
+      
+      if (quiz) {
+        quizSec.classList.remove('hidden');
+        document.getElementById('quiz-question').innerText = quiz.question;
+        
+        // Render Option Buttons
+        const optionsDiv = document.getElementById('quiz-options');
+        optionsDiv.innerHTML = '';
+        activeQuizAnswer = null; // reset selection
+        
+        quiz.options.forEach((opt, index) => {
+          const btn = document.createElement('button');
+          btn.className = "text-left text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 px-3 py-2.5 rounded-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex items-start gap-2.5 outline-none shadow-sm w-full";
+          btn.innerHTML = `<span class="w-4 h-4 rounded-full border border-slate-400 dark:border-slate-600 flex items-center justify-center text-[9px] font-bold mt-0.5 shrink-0 select-none">${String.fromCharCode(65 + index)}</span> <span class="leading-relaxed">${opt}</span>`;
+          
+          btn.onclick = () => selectQuizOption(index, btn);
+          optionsDiv.appendChild(btn);
+        });
+        
+        // Reset feedback
+        document.getElementById('quiz-status').innerText = "Not Answered";
+        document.getElementById('quiz-status').className = "text-xs font-semibold text-slate-500 dark:text-slate-400";
+        document.getElementById('quiz-feedback').classList.add('hidden');
+        document.getElementById('quiz-submit-btn').style.display = 'block';
+      } else {
+        quizSec.classList.add('hidden');
+      }
+    }
+
+    function findParentNode(rootNode, childId) {
+      if (rootNode.children) {
+        for (let child of rootNode.children) {
+          if (child.id === childId) return rootNode;
+          const res = findParentNode(child, childId);
+          if (res) return res;
+        }
+      }
+      return null;
+    }
+
+    // --- SIDEBAR STATUS SELECTOR ---
+    function renderStatusSelector(node) {
+      const container = document.getElementById('status-container');
+      container.innerHTML = '';
+      
+      if (node.id === 'gcp-ace') return;
+      
+      const status = getStudyStatus(node);
+      const statuses = [
+        { key: 'todo', label: 'To Study', color: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700 hover:bg-slate-200' },
+        { key: 'learning', label: 'In Progress', color: 'bg-yellow-50 dark:bg-yellow-950/20 text-gcp-yellow border-yellow-300 dark:border-yellow-900/30' },
+        { key: 'mastered', label: 'Mastered', color: 'bg-green-50 dark:bg-green-950/20 text-gcp-green border-green-300 dark:border-green-900/30' }
+      ];
+      
+      const activeObj = statuses.find(s => s.key === status);
+      
+      const selectBtn = document.createElement('div');
+      selectBtn.className = `px-3 py-1 text-xs font-bold border rounded-full flex items-center gap-1.5 transition select-none cursor-pointer ${activeObj.color}`;
+      
+      let dotColor = "bg-slate-500";
+      if (status === 'learning') dotColor = "bg-gcp-yellow animate-pulse";
+      else if (status === 'mastered') dotColor = "bg-gcp-green";
+      
+      selectBtn.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span> <span>${activeObj.label}</span> <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>`;
+      
+      const wrapper = document.createElement('div');
+      wrapper.className = "relative inline-block";
+      wrapper.appendChild(selectBtn);
+      
+      const dropdown = document.createElement('div');
+      dropdown.className = "hidden absolute right-0 mt-1 w-32 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-1 shadow-2xl z-50 text-xs";
+      
+      statuses.forEach(st => {
+        const item = document.createElement('button');
+        item.className = "w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-slate-900 hover:dark:text-white flex items-center gap-2";
+        let dCol = "bg-slate-500";
+        if (st.key === 'learning') dCol = "bg-gcp-yellow";
+        else if (st.key === 'mastered') dCol = "bg-gcp-green";
+        
+        item.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${dCol}"></span> <span>${st.label}</span>`;
+        item.onclick = () => {
+          updateNodeStatus(node, st.key);
+          dropdown.classList.add('hidden');
+        };
+        dropdown.appendChild(item);
+      });
+      
+      wrapper.appendChild(dropdown);
+      container.appendChild(wrapper);
+      lucide.createIcons();
+      
+      selectBtn.onclick = (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+      };
+      
+      window.addEventListener('click', () => {
+        dropdown.classList.add('hidden');
+      });
+    }
+
+    function updateNodeStatus(node, newStatus) {
+      if (node.children && node.children.length > 0) {
+        const cascade = confirm(`Cascade status: Do you want to mark all sub-branches under "${node.name}" as "${newStatus}" as well?`);
+        if (cascade) {
+          updateNodeStatusRecursive(node, newStatus);
+        } else {
+          userProgress[node.id] = newStatus;
+        }
+      } else {
+        userProgress[node.id] = newStatus;
+      }
+      
+      saveProgressState();
+      selectNode(node.id);
+      renderMindMap();
+    }
+    
+    function updateNodeStatusRecursive(node, status) {
+      userProgress[node.id] = status;
+      if (node.children) {
+        node.children.forEach(c => updateNodeStatusRecursive(c, status));
+      }
+    }
+
+    function copyCommand(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-gcp-green"></i>`;
+        lucide.createIcons();
+        setTimeout(() => {
+          btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i>`;
+          lucide.createIcons();
+        }, 2000);
+      });
+    }
+
+    // --- QUIZ GAME ENGINE ---
+    function selectQuizOption(index, button) {
+      const parent = document.getElementById('quiz-options');
+      const buttons = parent.querySelectorAll('button');
+      
+      buttons.forEach(btn => {
+        btn.classList.remove('border-gcp-blue', 'bg-gcp-blue/5', 'text-slate-900', 'dark:border-gcp-yellow', 'dark:bg-gcp-yellow/5', 'dark:text-white');
+        btn.classList.add('border-slate-200', 'dark:border-slate-800', 'bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300');
+        btn.querySelector('span').classList.remove('bg-gcp-blue', 'bg-gcp-yellow', 'text-slate-950', 'text-white', 'border-gcp-blue', 'border-gcp-yellow');
+        btn.querySelector('span').classList.add('border-slate-400', 'dark:border-slate-600');
+      });
+      
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) {
+        button.classList.add('border-gcp-yellow', 'bg-gcp-yellow/5', 'text-white');
+        button.querySelector('span').classList.add('bg-gcp-yellow', 'text-slate-950', 'border-gcp-yellow');
+      } else {
+        button.classList.add('border-gcp-blue', 'bg-gcp-blue/5', 'text-slate-900');
+        button.querySelector('span').classList.add('bg-gcp-blue', 'text-white', 'border-gcp-blue');
+      }
+      button.classList.remove('border-slate-200', 'dark:border-slate-800', 'bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300');
+      button.querySelector('span').classList.remove('border-slate-400', 'dark:border-slate-600');
+      
+      activeQuizAnswer = index;
+    }
+
+    function submitQuizAnswer() {
+      if (activeQuizAnswer === null) {
+        alert("Please select an option first!");
+        return;
+      }
+      
+      const node = findNodeById(mindMapData, selectedNodeId);
+      const quiz = quizDatabase[node.id];
+      if (!quiz) return;
+      
+      const correct = activeQuizAnswer === quiz.answer;
+      const parent = document.getElementById('quiz-options');
+      const buttons = parent.querySelectorAll('button');
+      
+      buttons.forEach((btn, idx) => {
+        btn.onclick = null; // freeze choice
+        if (idx === quiz.answer) {
+          // Correct answer gets beautiful green contrast
+          btn.className = "text-left text-xs bg-green-50 dark:bg-green-950/20 border-green-500 rounded-lg text-green-700 dark:text-green-300 p-2.5 flex items-start gap-2.5 transition-all w-full shadow-sm";
+          btn.querySelector('span').className = "w-4 h-4 rounded-full bg-gcp-green text-white dark:text-slate-950 border border-gcp-green flex items-center justify-center text-[9px] font-bold mt-0.5 shrink-0";
+        } else if (idx === activeQuizAnswer) {
+          // Wrong selection gets beautiful red contrast
+          btn.className = "text-left text-xs bg-red-50 dark:bg-red-950/20 border-red-500 rounded-lg text-red-700 dark:text-red-300 p-2.5 flex items-start gap-2.5 transition-all w-full shadow-sm";
+          btn.querySelector('span').className = "w-4 h-4 rounded-full bg-gcp-red text-white border border-gcp-red flex items-center justify-center text-[9px] font-bold mt-0.5 shrink-0";
+        } else {
+          btn.className = "text-left text-xs bg-slate-50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-950 rounded-lg text-slate-400 dark:text-slate-500 p-2.5 flex items-start gap-2.5 transition-all w-full opacity-40 cursor-not-allowed";
+        }
+      });
+      
+      const statusEl = document.getElementById('quiz-status');
+      const feedbackEl = document.getElementById('quiz-feedback');
+      
+      if (correct) {
+        statusEl.innerHTML = `<span class="flex items-center gap-1 text-gcp-green"><i data-lucide="check" class="w-3.5 h-3.5"></i> Correct!</span>`;
+        feedbackEl.className = "p-3 bg-green-50 dark:bg-green-950/10 border border-green-200 dark:border-green-900/40 text-green-800 dark:text-green-200 rounded text-[11px] leading-relaxed";
+        
+        if (userProgress[node.id] === 'todo') {
+          userProgress[node.id] = 'learning';
+          saveProgressState();
+          renderMindMap();
+          renderStatusSelector(node);
+        }
+      } else {
+        statusEl.innerHTML = `<span class="flex items-center gap-1 text-gcp-red"><i data-lucide="x" class="w-3.5 h-3.5"></i> Incorrect</span>`;
+        feedbackEl.className = "p-3 bg-red-50 dark:bg-red-950/10 border border-red-200 dark:border-red-900/40 text-red-800 dark:text-red-200 rounded text-[11px] leading-relaxed";
+      }
+      
+      feedbackEl.innerHTML = `<strong>Explanation:</strong> ${quiz.explanation}`;
+      feedbackEl.classList.remove('hidden');
+      document.getElementById('quiz-submit-btn').style.display = 'none';
+      lucide.createIcons();
+    }
+
+    // --- SEARCH INDEX ---
+    let searchIndex = [];
+    function buildSearchIndex(node) {
+      searchIndex.push({ id: node.id, name: node.name, desc: node.description });
+      if (node.children) {
+        node.children.forEach(buildSearchIndex);
+      }
+    }
+
+    function handleSearch(query) {
+      const resultsDiv = document.getElementById('search-results');
+      if (!query || query.trim() === '') {
+        resultsDiv.classList.add('hidden');
+        return;
+      }
+      
+      const q = query.toLowerCase();
+      const hits = searchIndex.filter(n => n.name.toLowerCase().includes(q) || n.desc.toLowerCase().includes(q));
+      
+      if (hits.length === 0) {
+        resultsDiv.innerHTML = `<div class="text-slate-500 text-[11px] p-2 italic text-center">No matching topics found</div>`;
+        resultsDiv.classList.remove('hidden');
+        return;
+      }
+      
+      resultsDiv.innerHTML = '';
+      hits.forEach(hit => {
+        const div = document.createElement('button');
+        div.className = "w-full text-left px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-900 border-b border-slate-100 dark:border-slate-900 rounded text-[11px] flex items-center justify-between transition outline-none";
+        div.innerHTML = `<span class="text-slate-700 dark:text-slate-200 font-semibold truncate pr-2">${hit.name}</span><i data-lucide="arrow-right" class="w-3 h-3 text-slate-500"></i>`;
+        
+        div.onclick = () => {
+          expandParentRecursive(mindMapData, hit.id);
+          selectNode(hit.id);
+          
+          const node = findNodeById(mindMapData, hit.id);
+          if (node) {
+            panX = 600 - node.x * zoom + 100;
+            panY = 400 - node.y * zoom;
+            updateTransform();
+          }
+          
+          resultsDiv.classList.add('hidden');
+          document.getElementById('search-input').value = '';
+        };
+        resultsDiv.appendChild(div);
+      });
+      resultsDiv.classList.remove('hidden');
+      lucide.createIcons();
+    }
+    
+    function expandParentRecursive(rootNode, childId) {
+      const parent = findParentNode(mindMapData, childId);
+      if (parent) {
+        parent.collapsed = false;
+        expandParentRecursive(mindMapData, parent.id);
+      }
+    }
+
+    // --- TAB SWITCHER ---
+    function switchTab(tabId) {
+      const btnMap = document.getElementById('tab-mindmap');
+      const btnFc = document.getElementById('tab-flashcards');
+      const viewMap = document.getElementById('view-mindmap');
+      const viewFc = document.getElementById('view-flashcards');
+      
+      if (tabId === 'mindmap') {
+        btnMap.className = "px-4 py-1.5 rounded-md text-sm font-semibold transition bg-gcp-blue text-white flex items-center gap-2 shadow-sm";
+        btnFc.className = "px-4 py-1.5 rounded-md text-sm font-semibold transition text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2";
+        viewMap.classList.remove('hidden');
+        viewFc.classList.add('hidden');
+        renderMindMap();
+      } else {
+        btnFc.className = "px-4 py-1.5 rounded-md text-sm font-semibold transition bg-gcp-blue text-white flex items-center gap-2 shadow-sm";
+        btnMap.className = "px-4 py-1.5 rounded-md text-sm font-semibold transition text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2";
+        viewFc.classList.remove('hidden');
+        viewMap.classList.add('hidden');
+        
+        renderActiveFlashcard();
+        updateFlashcardProgressUI();
+      }
+    }
+
+    // --- FLASHCARD DATA ---
+    const flashcards = [
+      {
+        category: "IAM & Hierarchy",
+        front: "Can you create a Custom IAM Role at the Folder level in the GCP Resource Hierarchy?",
+        back: "NO.\n\nCustom Roles can only be created at the **Project** or **Organization** level. They cannot be created at the Folder level."
+      },
+      {
+        category: "IAM & Hierarchy",
+        front: "If a user is granted 'Viewer' role at the Folder level, can you remove their access to a single project inside that folder?",
+        back: "NO.\n\nIAM policies are inherited downward and are strictly **ADDITIVE**. You cannot restrict or override permissions at a lower level if they were granted at a higher level."
+      },
+      {
+        category: "IAM & Hierarchy",
+        front: "What is GKE Workload Identity, and why is it preferred over Service Account Keys?",
+        back: "Workload Identity securely binds a Kubernetes Service Account to a GCP IAM Service Account.\n\nThis allows GKE Pods to access Google Cloud APIs without needing local, long-lived JSON keys, eliminating key rotation and leakage risks entirely."
+      },
+      {
+        category: "Compute & Containers",
+        front: "What is the key difference between Standard and Autopilot GKE modes regarding node management?",
+        back: "Standard Mode: You manage and configure node pools, scaling, and OS updates.\n\nAutopilot Mode: Google manages the nodes, scaling, security, and upgrades. You only deploy Pods and pay for requested resources."
+      },
+      {
+        category: "Compute & Containers",
+        front: "What are Spot VMs, and what is their runtime behavior?",
+        back: "Spot VMs offer up to 90% discount compared to on-demand pricing.\n\nThey can be preempted (terminated) by Google at any time with a 30-second warning if capacity is needed elsewhere. There is no longer a strict 24-hour lifetime cap."
+      },
+      {
+        category: "Compute & Containers",
+        front: "How do you enable Auto-healing for a Managed Instance Group (MIG)?",
+        back: "Define a health check (HTTP, HTTPS, TCP, etc.) and link it to the MIG.\n\nIf a VM fails the health check repeatedly, the MIG automatically deletes and restarts the broken instance."
+      },
+      {
+        category: "VPC & Networking",
+        front: "What is Private Google Access?",
+        back: "A setting enabled at the subnet level that allows VM instances with only private internal IP addresses (no external public IPs) to securely connect to Google APIs and Services (GCS, BigQuery, etc.)."
+      },
+      {
+        category: "VPC & Networking",
+        front: "When creating a Global Application Load Balancer, what is unique about its IP address?",
+        back: "It uses a single, global **Anycast IP address**.\n\nThis IP routes traffic automatically to the nearest healthy backend region based on user latency, and fails over immediately."
+      },
+      {
+        category: "VPC & Networking",
+        front: "What is the maximum throughput of a single Cloud VPN IPsec tunnel, and how do you achieve 99.99% availability?",
+        back: "Max throughput is **3 Gbps** per tunnel.\n\nTo achieve 99.99% SLA availability, you must deploy **High-Availability (HA) VPN**, which configures two tunnels (active-active or active-passive) on separate peer gateways."
+      },
+      {
+        category: "Storage & Databases",
+        front: "What are the four Cloud Storage (GCS) storage classes, and when do you use them?",
+        back: "1. **Standard:** Highly active data.\n2. **Nearline:** Accessed < once a month (30d min).\n3. **Coldline:** Accessed < once a quarter (90d min).\n4. **Archive:** Accessed < once a year (360d min, compliance)."
+      },
+      {
+        category: "Storage & Databases",
+        front: "What is GCS Bucket Lock (Retention Policy)?",
+        back: "It locks a bucket with a retention period. Once locked, files cannot be overwritten or deleted by **anyone** (including project owners/root) until the retention duration expires."
+      },
+      {
+        category: "Storage & Databases",
+        front: "Under what specific condition should you choose Cloud Spanner over Cloud SQL?",
+        back: "Choose Spanner only when you need a relational database that **scales horizontally**, spans **multiple regions/globally**, and requires absolute **strong consistency** with synchronous writes across regions."
+      },
+      {
+        category: "Storage & Databases",
+        front: "What is the primary difference between Firestore and Bigtable?",
+        back: "Firestore: Serverless document NoSQL, perfect for mobile/web app state, supports transactions.\n\nBigtable: Non-serverless wide-column NoSQL, sub-10ms latency for massive-scale streaming writes (IoT, time-series, analytics ingestion)."
+      },
+      {
+        category: "Operations & DevOps",
+        front: "How can you store GCP Cloud Logging logs for long-term compliance (e.g. 7 years) at the lowest cost?",
+        back: "Create a **Log Sink** in the Log Router that filters logs and exports them directly to a Cloud Storage (GCS) **Archive** bucket."
+      },
+      {
+        category: "Operations & DevOps",
+        front: "What is a Log-Based Metric, and when is it useful?",
+        back: "A feature in Cloud Logging that converts a text-based log pattern (like 'DATABASE_CONN_FAIL') into a numerical metric.\n\nThis allows you to graph rates and trigger alerts in Cloud Monitoring."
+      }
+    ];
+
+    let currentCardIndex = 0;
+    let filteredCards = [...flashcards];
+    let isFlipped = false;
+
+    function populateCategoryFilter() {
+      const filter = document.getElementById('flashcard-category-filter');
+      const categories = [...new Set(flashcards.map(c => c.category))];
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.innerText = cat;
+        filter.appendChild(opt);
+      });
+    }
+
+    function filterFlashcards(category) {
+      if (category === 'All') {
+        filteredCards = [...flashcards];
+      } else {
+        filteredCards = flashcards.filter(c => c.category === category);
+      }
+      currentCardIndex = 0;
+      isFlipped = false;
+      document.getElementById('active-flashcard').classList.remove('flipped');
+      renderActiveFlashcard();
+    }
+
+    function renderActiveFlashcard() {
+      const card = filteredCards[currentCardIndex];
+      if (!card) return;
+      
+      document.getElementById('fc-category-badge').innerText = card.category;
+      document.getElementById('fc-category-badge-back').innerText = card.category;
+      
+      document.getElementById('fc-front-text').innerText = card.front;
+      document.getElementById('fc-back-text').innerText = card.back;
+      
+      const indicatorText = `Card ${currentCardIndex + 1} of ${filteredCards.length}`;
+      document.getElementById('fc-index-indicator').innerText = indicatorText;
+      document.getElementById('fc-index-indicator-back').innerText = indicatorText;
+    }
+
+    function flipFlashcard() {
+      isFlipped = !isFlipped;
+      document.getElementById('active-flashcard').classList.toggle('flipped');
+    }
+
+    function prevFlashcard() {
+      if (currentCardIndex > 0) {
+        currentCardIndex--;
+        isFlipped = false;
+        document.getElementById('active-flashcard').classList.remove('flipped');
+        setTimeout(renderActiveFlashcard, 150);
+      }
+    }
+
+    function nextFlashcard() {
+      if (currentCardIndex < filteredCards.length - 1) {
+        currentCardIndex++;
+        isFlipped = false;
+        document.getElementById('active-flashcard').classList.remove('flipped');
+        setTimeout(renderActiveFlashcard, 150);
+      }
+    }
+
+    function markFlashcardStatus(mastered) {
+      const card = filteredCards[currentCardIndex];
+      const mainIdx = flashcards.findIndex(f => f.front === card.front);
+      
+      if (mainIdx !== -1) {
+        flashcardProgress[mainIdx] = mastered ? 'mastered' : 'learning';
+        localStorage.setItem('gcp_ace_flashcards_progress', JSON.stringify(flashcardProgress));
+        updateFlashcardProgressUI();
+        
+        if (currentCardIndex < filteredCards.length - 1) {
+          setTimeout(nextFlashcard, 200);
+        }
+      }
+    }
+
+    function updateFlashcardProgressUI() {
+      const total = flashcards.length;
+      const reviewedKeys = Object.keys(flashcardProgress);
+      const reviewed = reviewedKeys.length;
+      
+      document.getElementById('cards-total-count').innerText = total;
+      document.getElementById('cards-reviewed-count').innerText = reviewed;
+    }
+
+    // --- INITIALIZATION ON DOCUMENT LOAD ---
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme(); // Set light/dark theme preference
+      loadState(); // Load saved learning state
+      buildSearchIndex(mindMapData);
+      populateCategoryFilter();
+      renderMindMap(); // Draw the SVG canvas
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
