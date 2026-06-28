@@ -3386,28 +3386,7 @@
     // We will clone the existing 50 questions to create a complete 100-question package, but with randomized indices or minor variations
     // so we have exactly 100 realistic, high-quality entries with valid matching answer and explanation indices!
     let examQuestions = [...bundle1Questions];
-    
-    // Build programmatic expansions to reach 100 questions!
-    const categoriesPool = [
-      "Set Up Cloud Solution Environment",
-      "Plan & Configure Cloud Solution",
-      "Deploy & Implement Cloud Solution",
-      "Ensuring Successful Operation",
-      "Configure Access & Security"
-    ];
-
-    // Clone the first 50 with modified numbers and tags to construct an exact, robust 100-question study bank
-    for (let i = 0; i < 50; i++) {
-      const src = bundle1Questions[i];
-      examQuestions.push({
-        id: i + 51,
-        category: src.category,
-        question: `[Case Scenario #${i+51}] ${src.question}`,
-        options: src.options,
-        answer: src.answer,
-        explanation: src.explanation
-      });
-    }
+    // Already 100 questions in bundle1Questions; no cloning needed.
 
     // --- ACTIVE EXAM STATE ---
     let examActive = false;
