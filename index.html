@@ -1501,6 +1501,19 @@
     }
 
     // --- NODE SELECTION & DETAIL POPULATION ---
+    let activeQuizAnswer = null;
+
+    function findNodeById(node, id) {
+      if (node.id === id) return node;
+      if (node.children) {
+        for (let child of node.children) {
+          const res = findNodeById(child, id);
+          if (res) return res;
+        }
+      }
+      return null;
+    }
+
     function selectNode(id) {
       selectedNodeId = id;
       const isDark = document.documentElement.classList.contains('dark');
